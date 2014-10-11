@@ -29,7 +29,25 @@ sed '/<div\ class=\"mori\-nav\">/,/<\/div>/d' "${DOC}index.html" > tmp
 mv tmp "${DOC}index.html"
 
 ### fill index
-sed -n '/id=.fundamentals/,$ p' "${DOC}index.html" | grep "h3 id" | while read -r line; do
+grep "h2 id" "${DOC}index.html" | while read -r line; do
+    NAME=$(echo $line | sed 's/<h2 id.*>\(.*\)<\/h2>/\1/')
+    LINK="index.html#$(echo $line | sed 's/<h2 id=\"\(.*\)\">.*/\1/')"
+    sqlite3 $IDX "INSERT OR IGNORE INTO searchIndex(name, type, path) VALUES ('$NAME', 'Category', '$LINK');"
+done
+
+sed -n '/id=.collections/,/id=.collection_operations/p' "${DOC}index.html" | grep "h3 id" | while read -r line; do
+    NAME=$(echo $line | sed 's/<h3 id=\"\(.*\)\">.*/\1/')
+    LINK="index.html#$NAME"
+    sqlite3 $IDX "INSERT OR IGNORE INTO searchIndex(name, type, path) VALUES ('$NAME', 'Type', '$LINK');"
+done
+
+sed -n '/id=.fundamentals/,/id=.collections/p' "${DOC}index.html" | grep "h3 id" | while read -r line; do
+    NAME=$(echo $line | sed 's/<h3 id=\"\(.*\)\">.*/\1/')
+    LINK="index.html#$NAME"
+    sqlite3 $IDX "INSERT OR IGNORE INTO searchIndex(name, type, path) VALUES ('$NAME', 'Method', '$LINK');"
+done
+
+sed -n '/id=.collection_operations/,$ p' "${DOC}index.html" | grep "h3 id" | while read -r line; do
     NAME=$(echo $line | sed 's/<h3 id=\"\(.*\)\">.*/\1/')
     LINK="index.html#$NAME"
     sqlite3 $IDX "INSERT OR IGNORE INTO searchIndex(name, type, path) VALUES ('$NAME', 'Method', '$LINK');"
