@@ -6,6 +6,7 @@ IDX="${RES}docSet.dsidx"
 
 ### clean all up
 rm -rf mori.docset
+rm -f mori.tgz
 
 ### create directory structure
 mkdir -p mori.docset/Contents/Resources/Documents/
@@ -33,5 +34,8 @@ sed -n '/id=.fundamentals/,$ p' "${DOC}index.html" | grep "h3 id" | while read -
     LINK="index.html#$NAME"
     sqlite3 $IDX "INSERT OR IGNORE INTO searchIndex(name, type, path) VALUES ('$NAME', 'Method', '$LINK');"
 done
+
+### pack things up
+tar --exclude='.DS_Store' -cvzf mori.tgz mori.docset
 
 echo done.
