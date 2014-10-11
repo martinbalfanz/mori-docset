@@ -1,0 +1,4 @@
+[submodule "mori"]
+	path = mori
+	url = https://github.com/swannodette/mori.git
+	ignore = dirty
